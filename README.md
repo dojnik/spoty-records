@@ -1,9 +1,9 @@
 Fork was created for the purpose of fixing issues with using Extended Spotify Streaming Data.  
 This fork is not only getting features as it used to, but it also aquires genres for every track for further analytical purposes.
 
-Be aware that this project is very wonky when it comes to getting A LOT OF DATA sorted out. Spotify API makes it even harder.
+**Be aware that this project is very wonky when it comes to getting A LOT OF DATA sorted out. Spotify API makes it even harder, so if you work with i.e. 80k records, be prepared for ocasional crashes or just API no longer responding afer 10k records processed.**
 
-/// Initial project README
+/// Initial project README  
 Extract your extended Spotify streaming history, connect to the Spotify API to acquire the songs' features and genre, and organize everything into a handy .csv file. 
 
 Dependencies:
