@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jan 27 18:41:32 2020
 
-@author: vlad
-"""
-
-import ast
 import requests
 from datetime import datetime
 from typing import List
@@ -14,6 +8,7 @@ import spotipy
 import spotipy.util as util
 from os import listdir
 import pandas as pd
+import json
 
 def get_token(user: str, 
               client_id: str,
@@ -34,18 +29,21 @@ def get_streamings(path: str = 'MyData',
     Will not acquire track features.'''
     
     files = ['MyData/' + x for x in listdir(path)
-             if x.split('.')[0][:-1] == 'StreamingHistory']
-    
+            # change here so script accepts files with endsong name
+             if x.split('.')[0][:-1] == 'endsong_']                                                                  
+
     all_streamings = []
     
     for file in files: 
         with open(file, 'r', encoding='UTF-8') as f:
-            new_streamings = ast.literal_eval(f.read())
+            # it was using ast.literal_eval and giving errors, change to json.loads
+            new_streamings = json.loads(f.read())
             all_streamings += [streaming for streaming in new_streamings]
             
     #adding datetime field
     for streaming in all_streamings:
-        streaming['datetime'] = datetime.strptime(streaming['endTime'], '%Y-%m-%d %H:%M')    
+        # timestamp change, in endsong files name is 'ts' and timestamp is a bit different
+        streaming['datetime'] = datetime.strptime(streaming['ts'], '%Y-%m-%dT%H:%M:%S%z')
     return all_streamings
 
 def get_api_id(track_info: str, token: str,
@@ -120,9 +118,13 @@ def get_album(track_id: str, token: str) -> dict:
         album = sp.track(track_id)
         album_id = album['album']['id']
         album_name = album['album']['name']
-        return album_name, album_id
+        # making spotipy artist request
+        artist_genres_temp = sp.artist(album['album']['artists'][0]['id'])
+        # getting only one genre from available list of them from artist request
+        artist_genre = artist_genres_temp['genres'][0]
+        return album_name, album_id, artist_genre
     except:
-        return None, None
+        return None, None, None
 
 def get_saved_features(tracks, path = 'output/features.csv'):
     folder, file = path.split('/')

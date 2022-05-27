@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 29 10:29:55 2020
-
-@author: vlad
-"""
 
 import history
 import pandas as pd
@@ -20,9 +15,11 @@ def main():
     streamings = history.get_streamings()
     print(f'Recovered {len(streamings)} streamings.')
     
-    #getting a list of unique tracks in our history
+    # getting a list of unique tracks in our history
     # Add artist names too as multiple artist can have same song name
-    tracks = set([f"{streaming['trackName']}___{streaming['artistName']}" for streaming in streamings])
+
+    # headers in endsong files are a bit different so change is made here
+    tracks = set([f"{streaming['master_metadata_track_name']}___{streaming['master_metadata_album_artist_name']}" for streaming in streamings])
     print(f'Discovered {len(tracks)} unique tracks.')
     
     #getting saved ids for tracks
@@ -80,7 +77,8 @@ def main():
                 try:
                     features = history.get_api_features(idd, token)
                     track_features[track] = features
-                    features['albumName'], features['albumID'] = history.get_album(idd, token)
+                    # adding genres extension here
+                    features['albumName'], features['albumID'], features['genres'] = history.get_album(idd, token)
                     if features:
                         acquired += 1
                         print(f"Acquired features: {', '.join(track.split('___'))}. Total: {acquired}")
@@ -99,8 +97,10 @@ def main():
     #joining features and streamings
     print('Adding features to streamings...')
     streamings_with_features = []
-    for streaming in sorted(streamings, key= lambda x: x['endTime']):
-        track = streaming['trackName'] + "___" + streaming['artistName']
+    # header name changed for specified in endsong
+    for streaming in sorted(streamings, key= lambda x: x['ts']):
+        # forcing track names and artist names to string type because of some errors
+        track = str(streaming['master_metadata_track_name']) + "___" + str(streaming['master_metadata_album_artist_name'])
         features = track_features.get(track)
         if features:
             streamings_with_features.append({'name': track, **streaming, **features})
@@ -108,7 +108,7 @@ def main():
     print('Saving streamings...')
     df_final = pd.DataFrame(streamings_with_features)
     df_final.to_csv('output/final.csv')
-    perc_featured = round(len(streamings_with_features) / len(streamings) *100, 2)
+    perc_featured = round(len(streamings_with_features) / len(streamings) * 100, 2)
     print(f"Done! Percentage of streamings with features: {perc_featured}%.") 
     print("Run the script again to try getting more information from Spotify.")
 

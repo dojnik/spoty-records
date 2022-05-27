@@ -1,6 +1,10 @@
-Extract your Spotify streaming history, connect to the Spotify API to acquire the songs' features, and organize everything into a handy .csv file. 
+Fork was created for the purpose of fixing issues with using Extended Spotify Streaming Data.  
+This fork is not only getting features as it used to, but it also aquires genres for every track for further analytical purposes.
 
-Medium article: https://towardsdatascience.com/get-your-spotify-streaming-history-with-python-d5a208bbcbd3
+Be aware that this project is very wonky when it comes to getting A LOT OF DATA sorted out. Spotify API makes it even harder.
+
+/// Initial project README
+Extract your extended Spotify streaming history, connect to the Spotify API to acquire the songs' features and genre, and organize everything into a handy .csv file. 
 
 Dependencies:
 
@@ -12,7 +16,7 @@ Dependencies:
 
 Instructions:
 
-1. Enter your account dashboard at https://www.spotify.com/. In the privacy settings, apply for the download of your personal data. This might take a few days. When you get the mail, download the zip archive and place the MyData folder into the script folder. 
+1. Email privacy@spotify.com, that you need your extended streaming data. This process takes a while. In my case it took almost a month to get files.
 
 2. Sign up at Spotify for Developers at https://developer.spotify.com/. Select 'Create an app'. From the app panel, take note of your Client ID and Client Secret. Then select 'Edit settings' and whitelist a link in Redirect URIs. If you don't have a site, http://localhost:7777/callback will do. Take note of this link too.
 
